@@ -1,0 +1,21 @@
+{
+  "app_name": "weLAN/server",
+  "port": "80",
+  "static_path": "/manage/static",
+  "data_base": {
+    "drive": "postgres",
+    "host": "127.0.0.1",
+    "port": "5432",
+    "user": "admin",
+    "pwd": "admin666",
+    "database": "qfCms"
+  },
+  "redis": {
+    "net_work": "tcp",
+    "addr": "127.0.0.1",
+    "port": "6379",
+    "password": "",
+    "prefix": "qfCms_"
+  },
+  "mode": "dev"
+}
