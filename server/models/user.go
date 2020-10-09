@@ -13,7 +13,7 @@ type User struct {
 	Status     int64     `xorm:"default 0" json:"status"`
 	Avatar     string    `xorm:"varchar(255)" json:"avatar"`
 	MyName     string    `xorm:"varchar(32)" json:"my_name"`
-	Password        string    `xorm:"varchar(255)" json:"password"` //用户密码
+	Password   string    `xorm:"varchar(255)" json:"password"` //用户密码
 	LocalIp    string    `xorm:"varchar(15)" json:"local_ip"`
 }
 
@@ -22,12 +22,13 @@ type User struct {
  */
 func (this *User) UserToRespDesc() interface{} {
 	respDesc := map[string]interface{}{
-		"user_name":   this.UserName,
 		"id":          this.UserId,
+		"user_name":   this.UserName,
 		"create_time": this.CreateTime,
 		"status":      this.Status,
 		"avatar":      this.Avatar,
 		"my_name":     this.MyName,
+		"local_ip":    this.LocalIp,
 	}
 	return respDesc
 }

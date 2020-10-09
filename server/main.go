@@ -1,14 +1,14 @@
 package server
 
 import (
-	"weLAN/server/config"
-	"weLAN/server/controllers"
-	"weLAN/server/datasource"
-	"weLAN/server/services"
 	"fmt"
 	"net"
 	"time"
 	"weLAN/server/cmd"
+	"weLAN/server/config"
+	"weLAN/server/controllers"
+	"weLAN/server/datasource"
+	"weLAN/server/services"
 
 	"github.com/kataras/iris/v12"
 	"github.com/kataras/iris/v12/middleware/logger"

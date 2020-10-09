@@ -1,0 +1,48 @@
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" id="viewport" content="width=device-width, initial-scale=1">
+    <link rel="shortcut icon" href="favicon.png" type="image/x-icon">
+    <title>爱库存局域网文件传输平台</title>
+    <script src="/static/js/vue3.js"></script>
+    <script src="/static/js/axios.js"></script>
+</head>
+<body>
+    <div id="app" style="text-align: center">
+        <p v-model="users">{{.data.users}}</p>
+        <p>[[message]]</p>
+        <input type="button" value="show" @click="show">
+    </div>
+    <script>
+        const EventHandling = {
+            data() {
+                return {
+                    users:[],
+                    message: '温馨提示'
+                }
+            },
+            methods: {
+                show(){
+                    alert(users)
+                    alert("test")
+                },
+                postData(){
+                    let formData = JSON.stringify({username:'admin',password:'admin666'});
+                    axios({
+                        method: 'post',
+                        url:'http://localhost/user/login',
+                        data:formData,
+                    }).then((res)=>{
+                        this.message = res.data
+                        console.log(res)
+                    })
+                        .catch(Error=>{
+                            console.log(Error)
+                        });
+                }
+            }
+        }
+        Vue.createApp(EventHandling).mount('#app')
+    </script>
+</body>
+</html>·

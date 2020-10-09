@@ -77,12 +77,16 @@
                     url: 'http://localhost/user/login',
                     data: formData,
                 }).then((res) => {
+                    let status=res.data.status
                     this.message = res.data.message
                     console.log(res)
+                    if(status!=0){   
+                        window.location.href = "http://localhost/user/show";
+                    }
                 })
-                    .catch(Error => {
-                        console.log(Error)
-                    });
+                .catch(Error => {
+                    console.log(Error)
+                });
             }
         }
     }

@@ -1,6 +1,7 @@
 package services
 
 import (
+	"encoding/json"
 	"fmt"
 	"weLAN/server/models"
 
@@ -10,11 +11,12 @@ import (
 type UserService interface {
 	//通过用户用户名+密码 获取用户实体 如果查询到，返回用户实体，并返回true
 	//否则 返回 nil ，false
-	GetByUserNameAndPassword(username, password,localip string) (models.User, bool)
+	GetByUserNameAndPassword(username, password, localip string) (models.User, bool)
 	GetByUserName(username string) bool
 	//获取用户总数
 	GetUserCount() (int64, error)
 	AddUser(userRegister models.User) bool
+	UserList() interface{}
 }
 
 func NewUserService(db *xorm.Engine) UserService {
@@ -38,7 +40,6 @@ func (ac *userSevice) GetUserCount() (int64, error) {
 
 	if err != nil {
 		panic(err.Error())
-		return 0, err
 	}
 	return count, nil
 }
@@ -46,12 +47,12 @@ func (ac *userSevice) GetUserCount() (int64, error) {
 /**
  * 通过用户名和密码查询用户
  */
-func (ac *userSevice) GetByUserNameAndPassword(username, password,localip string) (models.User, bool) {
+func (ac *userSevice) GetByUserNameAndPassword(username, password, localip string) (models.User, bool) {
 	var user models.User
 
 	ac.engine.Where(" user_name = ? and password = ? ", username, password).Get(&user)
 
-	if user.UserId!=0{
+	if user.UserId != 0 {
 		userInsert := models.User{
 			LocalIp: localip,
 		}
@@ -71,6 +72,7 @@ func (ac *userSevice) GetByUserName(username string) bool {
 
 	ac.engine.Where(" user_name = ? ", username).Get(&user)
 	fmt.Println(user)
+	fmt.Println()
 	return user.UserId != 0
 }
 
@@ -85,16 +87,33 @@ func (ac *userSevice) GetInfo(username string) bool {
 func (ac *userSevice) AddUser(userRegister models.User) bool {
 	userInsert := models.User{
 		UserName: userRegister.UserName,
-		Password:      userRegister.Password,
+		Password: userRegister.Password,
 		MyName:   userRegister.MyName,
-		LocalIp: userRegister.LocalIp,
+		LocalIp:  userRegister.LocalIp,
 	}
 	rowNum, err := ac.engine.Insert(&userInsert)
 	if err != nil {
 		panic(err.Error())
-		return false
 	}
 	fmt.Println(rowNum) //rowNum 受影响的记录条数
 	fmt.Println()
 	return true
+}
+
+func (ac *userSevice) UserList() interface{} {
+	var users []string
+
+	ac.engine.Table("user").Cols("user_name").Find(&users)
+
+	usersJS, err := json.Marshal(users)
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println(string(usersJS))
+
+	respDesc := map[string]interface{}{
+		"users": string(usersJS),
+	}
+	return respDesc
 }

@@ -15,7 +15,7 @@ const (
 	host     = "localhost"
 	port     = 5432
 	user     = "admin"
-	password = "admin666"
+	password = "admin123"
 	dbname   = "LAN_Database"
 )
 
@@ -25,7 +25,7 @@ func NewMysqlEngine() *xorm.Engine {
 		host, port, user, password, dbname)
 
 	//数据库引擎
-		engine, err := xorm.NewEngine("postgres", psqlInfo)
+	engine, err := xorm.NewEngine("postgres", psqlInfo)
 
 	//根据实体创建表
 	//err = engine.CreateTables(new(model.User))

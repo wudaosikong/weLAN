@@ -35,8 +35,8 @@ const (
 type User struct {
 	UserName string `json:"user_name"`
 	Password string `json:"password"`
-	Name string `json:"name"`
-	LocalIp	string	`json:"local_ip"`
+	Name     string `json:"name"`
+	LocalIp  string `json:"local_ip"`
 }
 
 /**
@@ -131,13 +131,13 @@ func (ac *UserController) GetInfo() mvc.Result {
  * 用户登录功能
  * 接口：/User/login
  */
-func (ac *UserController) PostLogin(context iris.Context) mvc.Result {
+func (ac *UserController) PostLogin() mvc.Result {
 
 	iris.New().Logger().Info(" user login...")
 
 	var userLogin User
 	ac.Ctx.ReadJSON(&userLogin)
-	userLogin.LocalIp=tools.GetIntranetIp()[0]
+	userLogin.LocalIp = tools.GetIntranetIp()[0]
 
 	//var userLogin = &User{context.FormValue("username"), context.FormValue("password"),tools.GetIntranetIp()[0]}
 
@@ -154,7 +154,7 @@ func (ac *UserController) PostLogin(context iris.Context) mvc.Result {
 	}
 
 	//根据用户名、密码到数据库中查询对应的管理信息
-	user, exist := ac.Service.GetByUserNameAndPassword(userLogin.UserName, userLogin.Password,userLogin.LocalIp)
+	user, exist := ac.Service.GetByUserNameAndPassword(userLogin.UserName, userLogin.Password, userLogin.LocalIp)
 
 	//用户不存在
 	if !exist {
@@ -195,15 +195,15 @@ func (ac *UserController) GetRegister() mvc.View {
 	return registerView
 }
 
-func (ac *UserController) PostRegister(context iris.Context) mvc.Result {
+func (ac *UserController) PostRegister() mvc.Result {
 
 	var userRegister models.User
 	ac.Ctx.ReadJSON(&userRegister)
-	userRegister.LocalIp=tools.GetIntranetIp()[0]
+	userRegister.LocalIp = tools.GetIntranetIp()[0]
 
 	//userRegister := &models.User{UserName: context.FormValue("user_name"), Pwd: context.FormValue("password"), MyName: context.FormValue("name"),LocalIp: tools.GetIntranetIp()[0]}
 
-	if userRegister.UserName == "" || userRegister.Password == ""||userRegister.MyName=="" {
+	if userRegister.UserName == "" || userRegister.Password == "" || userRegister.MyName == "" {
 		return mvc.Response{
 			Object: map[string]interface{}{
 				"status":  "0",
@@ -226,10 +226,10 @@ func (ac *UserController) PostRegister(context iris.Context) mvc.Result {
 		}
 	} else if ac.Service.AddUser(userRegister) {
 		return mvc.Response{
-			Object: map[string]interface{} {
-			"status":  "1",
-			"success": "注册成功",
-			"message": "用户注册成功",
+			Object: map[string]interface{}{
+				"status":  "1",
+				"success": "注册成功",
+				"message": "用户注册成功",
 			},
 		}
 	}
@@ -238,6 +238,52 @@ func (ac *UserController) PostRegister(context iris.Context) mvc.Result {
 			"status":  "0",
 			"success": "注册失败",
 			"message": "用户注册失败",
+		},
+	}
+}
+
+func (ac *UserController) GetShow() mvc.View {
+	//从session中获取信息
+	userByte := ac.Session.Get(USER)
+
+	//session为空
+	if userByte == nil {
+		return mvc.View{
+			Name: "show.html",
+			Data: map[string]interface{}{
+				"status":  utils.RECODE_UNLOGIN,
+				"type":    utils.EEROR_UNLOGIN,
+				"message": utils.Recode2Text(utils.EEROR_UNLOGIN),
+			},
+		}
+	}
+
+	//解析数据到User数据结构
+	var user models.User
+	err := json.Unmarshal(userByte.([]byte), &user)
+
+	//解析失败
+	if err != nil {
+		return mvc.View{
+			Name: "show.html",
+			Data: map[string]interface{}{
+				"status":  utils.RECODE_UNLOGIN,
+				"type":    utils.EEROR_UNLOGIN,
+				"message": utils.Recode2Text(utils.EEROR_UNLOGIN),
+			},
+		}
+	}
+
+	//解析成功
+	//用户注册模板配置
+	return mvc.View{
+		//文件名,视图文件必须放在views文件夹下,因为这是app := iris.Default()默认的
+		//当然你也可以自己设置存放位置
+		Name: "show.html",
+		//传入的数据
+		Data: map[string]interface{}{
+			"status": utils.RECODE_OK,
+			"data":   ac.Service.UserList(),
 		},
 	}
 }
