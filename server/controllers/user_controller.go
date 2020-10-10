@@ -243,14 +243,23 @@ func (ac *UserController) PostRegister() mvc.Result {
 }
 
 func (ac *UserController) GetShow() mvc.View {
+	return mvc.View{
+		//文件名,视图文件必须放在views文件夹下,因为这是app := iris.Default()默认的
+		//当然你也可以自己设置存放位置
+		Name: "show.html",
+		//传入的数据
+		Data: map[string]interface{}{},
+	}
+}
+
+func (ac *UserController) GetApiData() mvc.Result {
 	//从session中获取信息
 	userByte := ac.Session.Get(USER)
 
 	//session为空
 	if userByte == nil {
-		return mvc.View{
-			Name: "show.html",
-			Data: map[string]interface{}{
+		return mvc.Response{
+			Object: map[string]interface{}{
 				"status":  utils.RECODE_UNLOGIN,
 				"type":    utils.EEROR_UNLOGIN,
 				"message": utils.Recode2Text(utils.EEROR_UNLOGIN),
@@ -264,9 +273,8 @@ func (ac *UserController) GetShow() mvc.View {
 
 	//解析失败
 	if err != nil {
-		return mvc.View{
-			Name: "show.html",
-			Data: map[string]interface{}{
+		return mvc.Response{
+			Object: map[string]interface{}{
 				"status":  utils.RECODE_UNLOGIN,
 				"type":    utils.EEROR_UNLOGIN,
 				"message": utils.Recode2Text(utils.EEROR_UNLOGIN),
@@ -276,12 +284,11 @@ func (ac *UserController) GetShow() mvc.View {
 
 	//解析成功
 	//用户注册模板配置
-	return mvc.View{
+	return mvc.Response{
 		//文件名,视图文件必须放在views文件夹下,因为这是app := iris.Default()默认的
 		//当然你也可以自己设置存放位置
-		Name: "show.html",
 		//传入的数据
-		Data: map[string]interface{}{
+		Object: map[string]interface{}{
 			"status": utils.RECODE_OK,
 			"data":   ac.Service.UserList(),
 		},

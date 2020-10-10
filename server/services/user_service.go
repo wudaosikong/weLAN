@@ -1,7 +1,6 @@
 package services
 
 import (
-	"encoding/json"
 	"fmt"
 	"weLAN/server/models"
 
@@ -103,17 +102,17 @@ func (ac *userSevice) AddUser(userRegister models.User) bool {
 func (ac *userSevice) UserList() interface{} {
 	var users []string
 
-	ac.engine.Table("user").Cols("user_name").Find(&users)
+	ac.engine.Table("user").Cols("my_name").Find(&users)
 
-	usersJS, err := json.Marshal(users)
-	if err != nil {
-		panic(err)
-	}
+	// usersJS, err := json.Marshal(users)
+	// if err != nil {
+	// 	panic(err)
+	// }
 
-	fmt.Println(string(usersJS))
+	// fmt.Println(string(usersJS))
 
 	respDesc := map[string]interface{}{
-		"users": string(usersJS),
+		"users": users,
 	}
 	return respDesc
 }

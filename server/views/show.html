@@ -3,46 +3,89 @@
     <meta charset="UTF-8">
     <meta name="viewport" id="viewport" content="width=device-width, initial-scale=1">
     <link rel="shortcut icon" href="favicon.png" type="image/x-icon">
-    <title>爱库存局域网文件传输平台</title>
+    <title>爱库存文件传输平台</title>
+    <style type="text/css">
+        form {
+            line-height: 3em;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        form > input {
+            padding: 3px 3px;
+            font-size: 16px;
+            border: 1px solid #888888;
+            border-radius: 5px
+        }
+
+        form > span {
+            color: blueviolet;
+        }
+    </style>
     <script src="/static/js/vue3.js"></script>
     <script src="/static/js/axios.js"></script>
 </head>
-<body>
-    <div id="app" style="text-align: center">
-        <p v-model="users">{{.data.users}}</p>
-        <p>[[message]]</p>
-        <input type="button" value="show" @click="show">
+<body style="text-align: center">
+    <div id="app">
+        <span>收件人：</span>
+            <select v-model="selected" @change="test">
+                <option value="default">请选择</option>
+                <option v-for="user in users" :value="user">
+                  [[user]]
+                </option>
+              </select>
+    </div>
+    <div>
+        <form>
+            <span>发送文件</span><input type="radio" name="file" value="file" v-model="selectFile" @change="show(selectFile)">
+            <span>发送文件夹</span><input type="radio" name="folder" value="folder" v-model="selectFolder"  @change="show(selectFolder)">
+        </form>
+        <form>
+            <input class="select" type ="file" name ="path" v-show="fileStatus">
+            <input class="select" type ="file" name ="path" webkitdirectory v-show="folderStatus">
+        </form>
     </div>
     <script>
         const EventHandling = {
             data() {
                 return {
                     users:[],
-                    message: '温馨提示'
+                    selected:"default",
+                    message: '温馨提示',
+                    fileStatus:false,
+                    folderStatus:false,
+                    selectFile:"",
+                    selectFolder:"",
                 }
             },
             methods: {
-                show(){
-                    alert(users)
-                    alert("test")
+                show(select){
+                    if(select=="file"){
+                        this.fileStatus=true
+                    }else if(select=="folder"){
+                        this.folderStatus=true
+                    }
                 },
-                postData(){
-                    let formData = JSON.stringify({username:'admin',password:'admin666'});
+                getData(){
                     axios({
-                        method: 'post',
-                        url:'http://localhost/user/login',
-                        data:formData,
+                        method: 'get',
+                        url:'http://localhost/user/api/data',
                     }).then((res)=>{
-                        this.message = res.data
+                        // this.users=JSON.parse(res.data.data.users)
+                        this.users=res.data.data.users
+                        alert(this.users)
                         console.log(res)
                     })
                         .catch(Error=>{
                             console.log(Error)
                         });
-                }
-            }
+                },
+            },
+            mounted(){
+                this.getData()
+            },
         }
         Vue.createApp(EventHandling).mount('#app')
     </script>
 </body>
-</html>·
+</html>

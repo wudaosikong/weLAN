@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" id="viewport" content="width=device-width, initial-scale=1">
     <link rel="shortcut icon" href="favicon.png" type="image/x-icon">
-    <title>爱库存局域网文件传输平台</title>
+    <title>爱库存文件传输平台</title>
     <style type="text/css">
         form {
             line-height: 3em;
@@ -106,6 +106,10 @@
                         data: formData,
                     }).then((res) => {
                         this.message = res.data.message
+                        let status=res.data.status
+                        if(status!=0){   
+                            window.location.href = "http://localhost/user/show";
+                        }
                         console.log(res)
                     })
                         .catch(Error => {
